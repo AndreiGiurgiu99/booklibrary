@@ -1,130 +1,113 @@
-const myLibrary= [];
+const myLibrary = [];
+const container = document.querySelector(".library");
 
-const container = document.querySelector(".library")
 
-function Book(title,author,pages,genre,read) {
+function Book(title, author, pages, genre, read) {
     this.title = title;
     this.author = author;
     this.pages = pages;
     this.genre = genre;
     this.read = read;
-
 }
 
-function addBookToLibrary(title,author,pages,genre,read){
-    let newBook = new Book(title,author,pages,genre,read)
 
-    myLibrary.push(newBook)
-    return newBook
+Book.prototype.toggleReadStatus = function() {
+    this.read = this.read === "Read" ? "Not Read" : "Read";
+};
+
+function addBookToLibrary(title, author, pages, genre, read) {
+    let newBook = new Book(title, author, pages, genre, read);
+    myLibrary.push(newBook);
+    return newBook;
 }
 
-// function displayBooks(){
-//     for(let b of myLibrary){
+function displayBooks(b, index) {
+    let template = document.createElement("div");
+    let info = document.createElement("div");
 
-//         let template = document.createElement("div");
-//         let info = document.createElement("div")
+    template.classList.add("book");
+    info.classList.add("info");
 
-//         template.classList.add("book")
-//         info.classList.add("info")
+    let title = document.createElement("h3");
+    title.textContent = b.title;
 
-//         let title = document.createElement("h3")
-//         title.textContent = b.title
+    let author = document.createElement("p");
+    author.textContent = "by " + b.author;
 
-//         let author = document.createElement("p")
-//         author.textContent = "by " + b.author
-        
-//         let pages = document.createElement("p")
-//         pages.innerHTML = "<b>Pages</b>: " + b.pages
+    let pages = document.createElement("p");
+    pages.textContent = "Pages: " + b.pages;
 
-//         let genre = document.createElement("p")
-//         genre.innerHTML = "<b>Genre</b>: " + b.genre
+    let genre = document.createElement("p");
+    genre.textContent = "Genre: " + b.genre;
 
-//         let readOr = document.createElement("p")
-//         readOr.innerHTML = "<b>Read</b>: " + b.read
-        
-//         info.appendChild(pages);
-//         info.appendChild(genre);
-//         info.appendChild(readOr);
+    let readOr = document.createElement("p");
+    readOr.textContent = "Read: " + b.read;
 
-//         template.appendChild(title);
-//         template.appendChild(author);
-//         template.appendChild(info);
-
-//         container.appendChild(template);
+    let delete1 = document.createElement("button");
+    delete1.textContent = "Delete book";
 
 
-//     }
-// }
+    let changeReadStatus = document.createElement("button");
+    changeReadStatus.textContent = "Change Read Status";
 
-function displayBooks(b){
-        
-        let template = document.createElement("div");
-        let info = document.createElement("div")
 
-        template.classList.add("book")
-        info.classList.add("info")
+    changeReadStatus.addEventListener("click", () => {
+        b.toggleReadStatus(); 
+        readOr.textContent = "Read: " + b.read;  
+    });
 
-        let title = document.createElement("h3")
-        title.textContent = b.title
 
-        let author = document.createElement("p")
-        author.textContent = "by " + b.author
-        
-        let pages = document.createElement("p")
-        pages.innerHTML = "<b>Pages</b>: " + b.pages
+    delete1.addEventListener("click", () => {
+        myLibrary.splice(index, 1); 
+        container.removeChild(template); 
+    });
 
-        let genre = document.createElement("p")
-        genre.innerHTML = "<b>Genre</b>: " + b.genre
+    info.appendChild(pages);
+    info.appendChild(genre);
+    info.appendChild(readOr);
+    info.appendChild(changeReadStatus);
+    info.appendChild(delete1); 
 
-        let readOr = document.createElement("p")
-        readOr.innerHTML = "<b>Read</b>: " + b.read
+    template.appendChild(title);
+    template.appendChild(author);
+    template.appendChild(info);
 
-        let delete1 = document.createElement("button");
-        delete1.innerHTML = "<b>Delete book</b>";
-        
-        info.appendChild(pages);
-        info.appendChild(genre);
-        info.appendChild(readOr);
-        info.appendChild(delete1);
-
-        template.appendChild(title);
-        template.appendChild(author);
-        template.appendChild(info);
-
-        container.appendChild(template);
-
+    container.appendChild(template);
 }
 
 const modal = document.querySelector("#myModal");
-const openModalBtn = document.querySelector(".openModal")
-const closeModalBtn = document.querySelector(".close-btn")
+const openModalBtn = document.querySelector(".openModal");
+const closeModalBtn = document.querySelector(".close-btn");
 
-openModalBtn.addEventListener("click", ()=>{
+openModalBtn.addEventListener("click", () => {
     modal.style.display = "flex";
 });
 
 closeModalBtn.addEventListener("click", () => {
-    modal.style.display = "none"
-})
-
-document.querySelector("#modalForm").addEventListener("submit", function(event) {
-    event.preventDefault(); 
-    
-    let title = document.querySelector("#title").value 
-    let author = document.querySelector("#author").value 
-    let pages = document.querySelector("#pages").value 
-    let genre = document.querySelector("#genre").value 
-    let read = document.querySelector("#read").value 
-    
-    let book = addBookToLibrary(title,author,pages,genre,read)
-
-    displayBooks(book)
-    modal.style.display = "none"; 
-
-    for (b in myLibrary) {
-        console.log(myLibrary[b])
-    }
-
+    modal.style.display = "none";
 });
 
+document.querySelector("#modalForm").addEventListener("submit", function (event) {
+    event.preventDefault();
 
+    let title = document.querySelector("#title").value;
+    let author = document.querySelector("#author").value;
+    let pages = document.querySelector("#pages").value;
+    let genre = document.querySelector("#genre").value;
+    let read = document.querySelector("#read").value;
+
+    // Add validation (optional)
+    if (!title || !author || !pages || !genre || !read) {
+        alert("Please fill in all fields.");
+        return;
+    }
+
+    let book = addBookToLibrary(title, author, pages, genre, read);
+
+    displayBooks(book, myLibrary.length - 1);
+
+    modal.style.display = "none";
+
+
+    myLibrary.forEach(b => console.log(b));
+});
